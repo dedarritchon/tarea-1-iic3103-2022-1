@@ -46,6 +46,8 @@ class Airport():
             'id': self.id,
             'name': self.name,
             'city': self.city.serialize(),
-            'lat': self.lat,
-            'long': self.long
+            'location': {
+                'lat': self.lat,
+                'long': self.long
+            }
         }
