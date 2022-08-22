@@ -193,7 +193,7 @@ class User():
 
 class Room():
 
-    MAX_FLIGHTS = int(os.getenv('MAX_FLIGHTS', 30))
+    MAX_FLIGHTS = int(os.getenv('MAX_FLIGHTS', 20))
     MAX_CLIENTS = 150
     LOBBY_WAIT = 10
 

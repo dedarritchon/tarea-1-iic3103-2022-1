@@ -79,8 +79,8 @@ class Flight():
     def set_steps(self):
         lat_diff = self.heading_lat - self.lat
         long_diff = self.heading_long - self.long
-        self.step_lat = float(lat_diff)/200
-        self.step_long = float(long_diff)/200
+        self.step_lat = float(lat_diff)/300
+        self.step_long = float(long_diff)/300
 
     def fly(self):
         self.lat += self.step_lat
