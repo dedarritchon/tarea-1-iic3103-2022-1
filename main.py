@@ -213,9 +213,9 @@ class Room():
     def flights_event(self):
         return {
             'type': 'flights',
-            'flights' : {f.id: f.details() for f in self.get_flights()}
+            'flights' : [f.details() for f in self.get_flights()]
         }
-    
+
     def plane_event(self, flight):
         return {
             'type': 'plane',
