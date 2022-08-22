@@ -32,7 +32,7 @@ substitutions:
   _REGION: us-central1
   _ENVIRONMENT: dev
   _PROJECT: taller-integracion-310700
-  _SERVICE_NAME: tarea3
+  _SERVICE_NAME: tarea1-2022-1
   _WORKING_DIR: ./
   _MAX_INSTANCES: '1'
   _MEMORY: 256Mi
