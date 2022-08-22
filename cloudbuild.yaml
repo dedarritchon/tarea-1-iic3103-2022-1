@@ -1,0 +1,39 @@
+steps:
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: build
+  args: ['build',
+         '--build-arg', 'GIT_REPO=$REPO_NAME',
+         '--build-arg', 'GIT_BRANCH=$BRANCH_NAME',
+         '--build-arg', 'GIT_COMMIT=$COMMIT_SHA',
+         '-t',
+         'gcr.io/$_PROJECT/$_SERVICE_NAME:$_ENVIRONMENT',
+         '$_WORKING_DIR']
+
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/$_PROJECT/$_SERVICE_NAME:$_ENVIRONMENT']
+
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  id: deploy
+  entrypoint: bash
+  args: ['-c', 'gcloud run deploy ${_SERVICE_NAME}-${_ENVIRONMENT}
+         --project $_PROJECT
+         --image gcr.io/$_PROJECT/$_SERVICE_NAME:$_ENVIRONMENT
+         --region $_REGION
+         --platform managed
+         --port $_PORT
+         --cpu 1
+         --max-instances $_MAX_INSTANCES
+         --memory $_MEMORY
+         --allow-unauthenticated'
+  ]
+
+substitutions:
+  _REGION: us-central1
+  _ENVIRONMENT: dev
+  _PROJECT: taller-integracion-310700
+  _SERVICE_NAME: tarea3
+  _WORKING_DIR: ./
+  _MAX_INSTANCES: '1'
+  _MEMORY: 256Mi
+  _PORT: '8000'

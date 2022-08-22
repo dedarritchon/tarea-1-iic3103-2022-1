@@ -1,0 +1,90 @@
+{
+    "flights": {
+        "HAMMRCORY": {
+            "id": "HAMMRCORY",
+            "airline": {
+                "id": "MRC",
+                "name": "Air Arabia Maroc"
+            },
+            "departure": {
+                "id": "HAM",
+                "name": "Hadha Almatar Muzayaf Airport (HAM)",
+                "city": {
+                    "id": "C4",
+                    "name": "Fez",
+                    "country": {
+                        "id": "MR",
+                        "name": "Morocco"
+                    }
+                },
+                "lat": 34.18655,
+                "long": -4.88594
+            },
+            "destination": {
+                "id": "ORY",
+                "name": "Orly International Airport (ORY)",
+                "city": {
+                    "id": "C5",
+                    "name": "Paris",
+                    "country": {
+                        "id": "FR",
+                        "name": "France"
+                    }
+                },
+                "lat": 48.726038,
+                "long": 2.365572
+            },
+            "departure_date": "2022-10-20 04:59:59.086628",
+            "captain": {
+                "id": "test_c8b60fd6-c221-435f-a39d-37d5b41710c7",
+                "name": "Daniela_Paz_Acevedo"
+            }
+        }
+    },
+    "plane": {
+        "flight_id": "HAMMRCORY",
+        "position": {
+            "lat": 38.851497,
+            "long": -77.04796
+        },
+        "heading": {
+            "lat": 38.851497,
+            "long": -77.04796
+        },
+        "ETA": 1.1966245115986072,
+        "distance": 1029.0970799748022,
+        "arrival": "2022-10-20 06:11:46.934870",
+        "flying": true,
+        "crashed": false,
+        "arrived": false
+    },
+    "re-route": {
+        "lat": 38.851497,
+        "long": -77.04796
+    },
+    "takeoff": {
+        "flight_id": "SCLSKYDCA"
+    },
+    "landing": {
+        "flight_id": "SCLSKYDCA"
+    },
+    "crash": {
+        "flight_id": "SCLSKYDCA",
+        "crashed_with": "SCLSKYDCA",
+        "lat": 38.851497,
+        "long": -77.04796
+    },
+    "message": {
+        "flight_id": "SCLSKYDCA",
+        "type": "info|warn|error",
+        "name": "Some name",
+        "date": "2022-11-15 03:30:30.409315",
+        "message": "Some message"
+    },
+    "chat": {
+        "message": "Some message"
+    },
+    "captain": {
+        "flight_id": "SCLSKYDCA"
+    }
+}
