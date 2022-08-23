@@ -7,40 +7,18 @@ import random
 import pyproj
 
 geod_WGS84 = pyproj.Geod(ellps='WGS84')
-geod_clrk66 = pyproj.Geod(ellps='clrk66')
-geod_MERIT = pyproj.Geod(ellps='MERIT')
-geod_SGS85 = pyproj.Geod(ellps='SGS85')
-geod_GRS80 = pyproj.Geod(ellps='GRS80')
-geod_IAU76 = pyproj.Geod(ellps='IAU76')
-geod_airy = pyproj.Geod(ellps='airy')
-geod_APL49 = pyproj.Geod(ellps='APL4.9')
-geod_NWL9D = pyproj.Geod(ellps='NWL9D')
-geod_andrae = pyproj.Geod(ellps='andrae')
-
-geods = [
-    geod_WGS84,
-    geod_clrk66,
-    geod_MERIT,
-    geod_SGS85,
-    geod_GRS80,
-    geod_IAU76,
-    geod_airy,
-    geod_APL49,
-    geod_NWL9D,
-    geod_andrae
-]
 
 
 def get_flight_path(startlong, startlat, endlong, endlat):
 
-    geod = random.choice(geods)
+    (_, _, dist) = geod_WGS84.inv(startlong, startlat, endlong, endlat)
 
-    lonlats = geod.npts(
+    lonlats = geod_WGS84.npts(
         startlong,
         startlat,
         endlong,
         endlat,
-        500,
+        1 + int(dist / 10000),
         initial_idx=0,
         terminus_idx=0
     )
@@ -51,8 +29,8 @@ def get_flight_path(startlong, startlat, endlong, endlat):
 class Flight():
 
     SPEED = 860
-    ARRIVE_DISTANCE = 5
-    ARRIVE_HOURS = 0.1
+    ARRIVE_DISTANCE = 1
+    ARRIVE_HOURS = 0.000000001
 
     def __init__(
         self, airline: Airline, departure: Airport, departure_date: datetime, destination: Airport, sku=None, batch=1, name=None, expiration=1, wait=1
@@ -135,10 +113,10 @@ class Flight():
         self.step_long = float(long_diff)/300
 
     def fly(self):
-        self.lat = self.flight_route[self.flight_route_index][0]
-        self.long = self.flight_route[self.flight_route_index][1]
-
-        self.flight_route_index += 1
+        if self.flight_route_index <= len(self.flight_route) - 1:
+            self.lat = self.flight_route[self.flight_route_index][0]
+            self.long = self.flight_route[self.flight_route_index][1]
+            self.flight_route_index += 1
 
     @property
     def price(self):

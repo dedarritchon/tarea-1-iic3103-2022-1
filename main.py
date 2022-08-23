@@ -193,7 +193,7 @@ class User():
 
 class Room():
 
-    MAX_FLIGHTS = int(os.getenv('MAX_FLIGHTS', 20))
+    MAX_FLIGHTS = int(os.getenv('MAX_FLIGHTS', 10))
     MAX_CLIENTS = 150
     LOBBY_WAIT = 10
 
@@ -345,7 +345,7 @@ class Room():
                 self.remove_flight(flight)
                 break
 
-            await asyncio.sleep(0.3)
+            await asyncio.sleep(0.2)
 
     def landing_event(self, flight: Flight):
         return {
