@@ -193,7 +193,7 @@ class User():
 
 class Room():
 
-    MAX_FLIGHTS = int(os.getenv('MAX_FLIGHTS', 20))
+    MAX_FLIGHTS = int(os.getenv('MAX_FLIGHTS', 1))
     MAX_CLIENTS = 150
     LOBBY_WAIT = 10
 
@@ -272,6 +272,12 @@ class Room():
         ])
         return selected
     
+    def random_crash_message(self, flight: Flight):
+        selected = random.choice([
+            'Mayday Mayday',
+        ])
+        return selected
+    
     def random_flying_message(self, flight: Flight):
         selected = random.choice([
             'Flight conditions are OK',
@@ -297,6 +303,12 @@ class Room():
         )
 
     async def simulate(self, flight: Flight):
+        
+        await self.simulate_takeoff(flight)
+
+        await self.simulate_flying(flight)
+    
+    async def simulate_takeoff(self, flight: Flight):
         while True:
             # preparing for takeoff
             if random.random() <= 0.5:
@@ -309,17 +321,13 @@ class Room():
                     )
                 await asyncio.sleep(5)
                 continue
+            await self.broadcast(self.takeoff_event(flight))
+            
             break
 
-        
-
-        await self.broadcast(self.takeoff_event(flight))
-
+    async def simulate_flying(self, flight: Flight):
         flight.status = 'flying'
-
         while True:
-
-            print(f"plane {flight.id} is flying")
 
             flight.fly()
 
@@ -331,21 +339,42 @@ class Room():
                     )
                 )
 
+            if flight.can_crash and random.random() <= 0.0001:
+                await self.simulate_crash(flight)
+                break
+
             if flight.arrived:
-                flight.status = 'arrived'
-                await self.broadcast(self.landing_event(flight))
-                if random.random() <= 0.1:
-                    await self.broadcast(
-                        self.message_event(
-                            self.random_landing_message(flight),
-                            'info', flight.captain, flight_id=flight.id
-                        )
-                    )
-                await asyncio.sleep(5)
-                self.remove_flight(flight)
+                await self.simulate_landing(flight)
                 break
 
             await asyncio.sleep(0.2)
+
+    async def simulate_crash(self, flight: Flight):
+        flight.status = 'crashed'
+        await self.broadcast(self.crash_event(flight))
+        await self.broadcast(
+            self.message_event(
+                self.random_crash_message(flight),
+                'warn', flight.captain, flight_id=flight.id
+            )
+        )
+        await asyncio.sleep(10)
+        self.remove_flight(flight)
+
+    async def simulate_landing(self, flight: Flight):
+        flight.status = 'arrived'
+        await self.broadcast(self.landing_event(flight))
+
+        if random.random() <= 0.1:
+            await self.broadcast(
+                self.message_event(
+                    self.random_landing_message(flight),
+                    'info', flight.captain, flight_id=flight.id
+                )
+            )
+
+        await asyncio.sleep(5)
+        self.remove_flight(flight)
 
     def landing_event(self, flight: Flight):
         return {
@@ -356,6 +385,12 @@ class Room():
     def takeoff_event(self, flight: Flight):
         return {
             'type': 'take-off',
+            'flight_id': flight.id
+        }
+    
+    def crash_event(self, flight: Flight):
+        return {
+            'type': 'crashed',
             'flight_id': flight.id
         }
 

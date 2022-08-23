@@ -52,19 +52,37 @@ class Flight():
         self.step_lat = 0
         self.step_long = 0
         self.ETA = 0
-        self.distance = 0
+        
         self.arrival_date = 0
         self.arrived = False
         self.takeoff = False
         self.crashed = False
+        self.can_crash = False
         self.status = 'take-off'
         self.flight_route_index = 0
         self.flight_route = []
-        self.set_flight_route()
+        self.total_distance = self.get_travel_distance()
+        self.flight_route = self.get_flight_route()
 
-    def set_flight_route(self):
-        lonlats = get_flight_path(self.long, self.lat, self.heading_long, self.heading_lat)
-        self.flight_route = [[lonlat[1], lonlat[0]] for lonlat in lonlats]
+    def get_flight_route(self):
+        lonlats = self.get_flight_path()
+        return [[lonlat[1], lonlat[0]] for lonlat in lonlats]
+
+    def get_flight_path(self):
+
+        dist = self.get_travel_distance()
+
+        lonlats = geod_WGS84.npts(
+            self.long,
+            self.lat,
+            self.heading_long,
+            self.heading_lat,
+            1 + int(dist / 10000),
+            initial_idx=0,
+            terminus_idx=0
+        )
+
+        return lonlats
 
     def get_flight_id(self):
         return f'{self.departure.id}{self.airline.id}{self.destination.id}'
@@ -74,14 +92,18 @@ class Flight():
         return distance/self.SPEED
 
     def get_travel_distance(self):
-        return geodesic(self.coords, self.destination.coords).km
+        (_, _, dist) = geod_WGS84.inv(self.long, self.lat, self.heading_long, self.heading_lat)
+        return dist
 
     def get_arrival_date(self):
         return self.departure_date + timedelta(hours=self.get_travel_hours())
 
     def get_info(self):
+
         distance = self.get_travel_distance()
 
+        if not self.can_crash and distance/self.total_distance <= 0.5:
+            self.can_crash = True
 
         ETA = distance/self.SPEED
 
@@ -93,24 +115,12 @@ class Flight():
             'ETA': ETA,
             'distance': distance,
             'arrival': str(arrival),
-            'status': self.status,
+            'status': self.status
         }
 
     @property
     def coords(self):
         return (self.lat, self.long)
-    
-    def landing_message(self):
-        return f'Landed safely at {self.destination.name}'
-    
-    def takeoff_message(self):
-        return f'Taking off at {self.departure.name}'
-
-    def set_steps(self):
-        lat_diff = self.heading_lat - self.lat
-        long_diff = self.heading_long - self.long
-        self.step_lat = float(lat_diff)/300
-        self.step_long = float(long_diff)/300
 
     def fly(self):
         if self.flight_route_index <= len(self.flight_route) - 1:
