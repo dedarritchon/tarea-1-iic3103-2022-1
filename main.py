@@ -345,7 +345,7 @@ class Room():
                 self.remove_flight(flight)
                 break
 
-            await asyncio.sleep(0.4)
+            await asyncio.sleep(0.3)
 
     def landing_event(self, flight: Flight):
         return {

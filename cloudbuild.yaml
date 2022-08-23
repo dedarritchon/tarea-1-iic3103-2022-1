@@ -34,6 +34,6 @@ substitutions:
   _PROJECT: taller-integracion-310700
   _SERVICE_NAME: tarea1-2022-1
   _WORKING_DIR: ./
-  _MAX_INSTANCES: '1'
+  _MAX_INSTANCES: '3'
   _MEMORY: 256Mi
   _PORT: '8000'

@@ -3,12 +3,32 @@ from .airport import Airport
 from geopy.distance import geodesic
 from .airline import Airline
 from .plane import Plane
+import pyproj
+
+
+def get_flight_path(startlong, startlat, endlong, endlat):
+    # calculate distance between points
+    g = pyproj.Geod(ellps='WGS84')
+
+    # calculate line string along path
+    lonlats = g.npts(
+        startlong,
+        startlat,
+        endlong,
+        endlat,
+        500,
+        initial_idx=0,
+        terminus_idx=0
+    )
+
+    return lonlats
 
 
 class Flight():
 
     SPEED = 860
-    ARRIVE_DISTANCE = 100
+    ARRIVE_DISTANCE = 5
+    ARRIVE_HOURS = 0.1
 
     def __init__(
         self, airline: Airline, departure: Airport, departure_date: datetime, destination: Airport, sku=None, batch=1, name=None, expiration=1, wait=1
@@ -36,7 +56,13 @@ class Flight():
         self.takeoff = False
         self.crashed = False
         self.status = 'take-off'
-        self.set_steps()
+        self.flight_route_index = 0
+        self.flight_route = []
+        self.set_flight_route()
+
+    def set_flight_route(self):
+        lonlats = get_flight_path(self.long, self.lat, self.heading_long, self.heading_lat)
+        self.flight_route = [[lonlat[1], lonlat[0]] for lonlat in lonlats]
 
     def get_flight_id(self):
         return f'{self.departure.id}{self.airline.id}{self.destination.id}'
@@ -54,10 +80,12 @@ class Flight():
     def get_info(self):
         distance = self.get_travel_distance()
 
-        if distance < self.ARRIVE_DISTANCE:
-            self.arrived = True
 
         ETA = distance/self.SPEED
+
+        if distance <= self.ARRIVE_DISTANCE or ETA <= self.ARRIVE_HOURS:
+            self.arrived = True
+
         arrival = self.departure_date + timedelta(hours=ETA)
         return {
             'ETA': ETA,
@@ -83,8 +111,10 @@ class Flight():
         self.step_long = float(long_diff)/300
 
     def fly(self):
-        self.lat += self.step_lat
-        self.long += self.step_long
+        self.lat = self.flight_route[self.flight_route_index][0]
+        self.long = self.flight_route[self.flight_route_index][1]
+
+        self.flight_route_index += 1
 
     @property
     def price(self):
