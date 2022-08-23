@@ -193,7 +193,7 @@ class User():
 
 class Room():
 
-    MAX_FLIGHTS = int(os.getenv('MAX_FLIGHTS', 10))
+    MAX_FLIGHTS = int(os.getenv('MAX_FLIGHTS', 20))
     MAX_CLIENTS = 150
     LOBBY_WAIT = 10
 
@@ -577,9 +577,12 @@ class Room():
             if len(self.get_flights()) >= self.MAX_FLIGHTS:
                 print("Max flights reached, please wait")
             else:
-                flight = self.generate_random_flight()
-                self.add_flight(flight)
-                asyncio.create_task(self.simulate(flight))
+                try:
+                    flight = self.generate_random_flight()
+                    self.add_flight(flight)
+                    asyncio.create_task(self.simulate(flight))
+                except:
+                    self.remove_flight(flight)
 
             await self.broadcast(self.flights_event())
             await asyncio.sleep(1)
