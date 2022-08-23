@@ -5,11 +5,9 @@ from .airline import Airline
 from .plane import Plane
 import pyproj
 
+g = pyproj.Geod(ellps='WGS84')
 
 def get_flight_path(startlong, startlat, endlong, endlat):
-    # calculate distance between points
-    g = pyproj.Geod(ellps='WGS84')
-
     # calculate line string along path
     lonlats = g.npts(
         startlong,
