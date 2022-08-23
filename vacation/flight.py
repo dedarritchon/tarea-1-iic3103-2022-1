@@ -3,13 +3,39 @@ from .airport import Airport
 from geopy.distance import geodesic
 from .airline import Airline
 from .plane import Plane
+import random
 import pyproj
 
-g = pyproj.Geod(ellps='WGS84')
+geod_WGS84 = pyproj.Geod(ellps='WGS84')
+geod_clrk66 = pyproj.Geod(ellps='clrk66')
+geod_MERIT = pyproj.Geod(ellps='MERIT')
+geod_SGS85 = pyproj.Geod(ellps='SGS85')
+geod_GRS80 = pyproj.Geod(ellps='GRS80')
+geod_IAU76 = pyproj.Geod(ellps='IAU76')
+geod_airy = pyproj.Geod(ellps='airy')
+geod_APL49 = pyproj.Geod(ellps='APL4.9')
+geod_NWL9D = pyproj.Geod(ellps='NWL9D')
+geod_andrae = pyproj.Geod(ellps='andrae')
+
+geods = [
+    geod_WGS84,
+    geod_clrk66,
+    geod_MERIT,
+    geod_SGS85,
+    geod_GRS80,
+    geod_IAU76,
+    geod_airy,
+    geod_APL49,
+    geod_NWL9D,
+    geod_andrae
+]
+
 
 def get_flight_path(startlong, startlat, endlong, endlat):
-    # calculate line string along path
-    lonlats = g.npts(
+
+    geod = random.choice(geods)
+
+    lonlats = geod.npts(
         startlong,
         startlat,
         endlong,
