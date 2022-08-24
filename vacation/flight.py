@@ -28,9 +28,9 @@ def get_flight_path(startlong, startlat, endlong, endlat):
 
 class Flight():
 
-    SPEED = 860
+    SPEED = 860000 # meters / hour
     ARRIVE_DISTANCE = 1
-    ARRIVE_HOURS = 0.000000001
+    ARRIVE_HOURS = 0.000001
 
     def __init__(
         self, airline: Airline, departure: Airport, departure_date: datetime, destination: Airport, sku=None, batch=1, name=None, expiration=1, wait=1
