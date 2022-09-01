@@ -455,7 +455,7 @@ class Room():
 
 
     async def broadcast(self, message: str):
-        self.log(f'Brodcasting: {message}')
+        # self.log(f'Brodcasting: {message}')
         await asyncio.gather(
             *[p.send(message) for p in self.get_users()]
         )
@@ -485,6 +485,7 @@ class Room():
                     await self.handle_chat_event(user, event)
 
             except Exception as e:
+                self.log(f'Exception on user {user.id} listen: {e}')
                 raise e
     
     async def handle_chat_event(self, user: User, event):
@@ -610,7 +611,7 @@ class Room():
     async def create_flights_loop(self):
         while True:
             if len(self.get_flights()) >= self.MAX_FLIGHTS:
-                print("Max flights reached, please wait")
+                pass
             else:
                 try:
                     flight = self.generate_random_flight()
